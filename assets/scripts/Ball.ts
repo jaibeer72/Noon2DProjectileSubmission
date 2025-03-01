@@ -1,4 +1,4 @@
-import { _decorator, Component, director, Graphics, math, Node, NodeEventType, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, CCFloat, Component, director, Graphics, math, Node, NodeEventType, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Ball')
@@ -10,16 +10,16 @@ export class Ball extends Component {
     @property(Graphics)
     trajectoryLine : Graphics = null;
 
-    @property(Number)
-    strengthScaleFactor : number = 1.0;
+    @property(CCFloat)
+    strengthScaleFactor = 1.0;
 
-    @property(Number)
-    gravityScale : number = 1.0;
+    @property(CCFloat)
+    gravityScale = 1.0;
 
 
     private isDragging : boolean = false;
-    private touchStartPoint : Vec2 = Vec2.ZERO;
-    private touchEndPoint : Vec2 = Vec2.ZERO; 
+    private touchStartPoint : Vec3 = Vec3.ZERO;
+    private touchEndPoint : Vec3 = Vec3.ZERO; 
     private bezzierSteps: number = 50;
 
 
@@ -43,7 +43,7 @@ export class Ball extends Component {
 
         // making sure that the touch event only starts when the touch is on the ball node
         let touchPos = event.getUILocation();
-        let ballPos : Vec2 = new Vec2 (this.node.getWorldPosition().x, this.node.getWorldPosition().y);
+        let ballPos : Vec3 = this.node.getWorldPosition();
         let ballSize = this.node.getComponent(UITransform).contentSize; // Get Component TODO : Cache this value
 
 
@@ -64,9 +64,9 @@ export class Ball extends Component {
 
         this.touchEndPoint = event.getUILocation();
 
-        let force = this.computeForce(this.touchStartPoint, this.touchEndPoint);
+        let force = this.computeForce(this.touchStartPoint,  this.touchEndPoint);
 
-        this.drawTrajectoryLine(this.node.getPosition(), force , (-1 * this.gravityScale) , this.bezzierSteps)
+        this.drawTrajectoryLine(this.touchStartPoint, force , (-1 * this.gravityScale) , this.bezzierSteps)
     }
 
     onTouchEnd(event: any) {
@@ -80,14 +80,15 @@ export class Ball extends Component {
 
         let force = this.computeForce(this.touchStartPoint, this.touchEndPoint);
 
-        console.log(force);
+        //console.log(force);
 
-        this.rigidBody.applyLinearImpulseToCenter(force,true);
+        this.rigidBody.applyLinearImpulseToCenter(force.toVec2(),true);
         this.trajectoryLine.clear();
     }
 
-    drawTrajectoryLine(startPos: Vec3, force: Vec2, gravity: number, bezzierSteps: number) {
+    drawTrajectoryLine(startPos: Vec3, force: Vec3, gravity: number, bezzierSteps: number) {
         this.trajectoryLine.clear();
+
 
         let velocity = force.clone(); 
         let midPoint = new Vec3(
@@ -97,7 +98,7 @@ export class Ball extends Component {
         );
         let endPoint = new Vec3(
             startPos.x + velocity.x,
-            startPos.y + velocity.y + gravity * 2, 
+            startPos.y + velocity.y + gravity, 
             0
         );
 
@@ -113,11 +114,10 @@ export class Ball extends Component {
 
         this.trajectoryLine.stroke();
     }
-    computeForce(touchStartPoint: Vec2, touchEndPoint: Vec2) : Vec2 {
-        let direction = touchStartPoint.subtract(touchEndPoint).normalize();
-        let strength = touchStartPoint.subtract(touchEndPoint).length() * this.strengthScaleFactor;
-
-        return direction.multiplyScalar(strength);
+    computeForce(touchStartPoint: Vec3, touchEndPoint: Vec3): Vec3 {
+        let tsp = touchStartPoint.clone(); // WHY DOES SUBTRACTING CHANGE THE ORIGINAL VALUE
+        let direction = tsp.subtract(touchEndPoint).normalize();
+        return direction.multiplyScalar(this.strengthScaleFactor);
     }
 }
 
