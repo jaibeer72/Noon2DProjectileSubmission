@@ -1,4 +1,4 @@
-import { _decorator, CCFloat, Component, director, Graphics, math, Node, NodeEventType, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, CCFloat, CCInteger, Component, director, Graphics, math, Node, NodeEventType, physics, PhysicsSystem, PhysicsSystem2D, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Ball')
@@ -16,11 +16,13 @@ export class Ball extends Component {
     @property(CCFloat)
     gravityScale = 1.0;
 
+    @property(CCInteger)
+    private bezzierSteps = 100;
 
     private isDragging : boolean = false;
     private touchStartPoint : Vec3 = Vec3.ZERO;
     private touchEndPoint : Vec3 = Vec3.ZERO; 
-    private bezzierSteps: number = 50;
+    private touchUIStartPoint : Vec2 = Vec2.ZERO; 
 
 
 
@@ -53,6 +55,7 @@ export class Ball extends Component {
             console.log("Touch Start");
             this.isDragging = true;
             this.touchStartPoint = ballPos;
+            this.touchUIStartPoint = touchPos; 
         }
 
     }
@@ -60,56 +63,54 @@ export class Ball extends Component {
     onTouchMove(event: any) {
         if(!this.isDragging) return; 
 
-        console.log("Touch move");
 
         this.touchEndPoint = event.getUILocation();
 
-        let force = this.computeForce(this.touchStartPoint,  this.touchEndPoint);
+        let force = this.computeForce(this.touchUIStartPoint.toVec3(),  this.touchEndPoint);
 
-        this.drawTrajectoryLine(this.touchStartPoint, force , (-1 * this.gravityScale) , this.bezzierSteps)
+         console.log( PhysicsSystem2D.instance.gravity); 
+
+        this.drawTrajectory(this.touchStartPoint, force , (-10 * this.gravityScale) , this.bezzierSteps)
     }
 
     onTouchEnd(event: any) {
         if(!this.isDragging) return; 
 
 
-        console.log("Touch touchEnd");
 
         this.isDragging = false;
         this.touchEndPoint = event.getUILocation();
 
         let force = this.computeForce(this.touchStartPoint, this.touchEndPoint);
 
-        //console.log(force);
-
         this.rigidBody.applyLinearImpulseToCenter(force.toVec2(),true);
         this.trajectoryLine.clear();
     }
 
-    drawTrajectoryLine(startPos: Vec3, force: Vec3, gravity: number, steps: number) {
+    drawTrajectory(startPosition: Vec3, force: Vec3, gravity: number, steps: number) {
         this.trajectoryLine.clear();
-    
-        let velocity = force.clone();
-        let position = startPos.clone();
-        let timeStep = 1 / 60; // Assuming 60 FPS for the simulation
-    
-        this.trajectoryLine.moveTo(this.node.getWorldPosition().x, this.node.getWorldPosition().y);
-    
+
+        let velocity = force.clone(); 
+        let prevPoint = Vec2.ZERO; 
+
+        this.trajectoryLine.moveTo(0, 0);
+
         for (let i = 0; i < steps; i++) {
-            // Update position based on velocity and gravity
-            position.x += velocity.x * timeStep;
-            position.y += velocity.y * timeStep;
-            velocity.y += gravity * timeStep;
-    
-            // Draw line to the new position
-            this.trajectoryLine.lineTo(position.x, position.y);
+            let t = i * 0.1;
+            let x = prevPoint.x + velocity.x * t;
+            let y = prevPoint.y + velocity.y * t + 0.5 * gravity * t * t;
+
+            let nextPoint = new Vec3(x, y, 0);
+            this.trajectoryLine.lineTo(nextPoint.x, nextPoint.y);
         }
-    
         this.trajectoryLine.stroke();
     }
+
+
     computeForce(touchStartPoint: Vec3, touchEndPoint: Vec3): Vec3 {
-        let tsp = touchStartPoint.clone(); // WHY DOES SUBTRACTING CHANGE THE ORIGINAL VALUE
+        let tsp = touchStartPoint.clone(); 
         let direction = tsp.subtract(touchEndPoint).normalize();
+
         return direction.multiplyScalar(this.strengthScaleFactor);
     }
 }
