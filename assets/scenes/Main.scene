@@ -424,7 +424,7 @@
     "trajectoryLine": {
       "__id__": 6
     },
-    "strengthScaleFactor": 100,
+    "strengthScaleFactor": 1,
     "gravityScale": 1,
     "_id": "60HgmoWxlCIaSMfEyr4Uqb"
   },

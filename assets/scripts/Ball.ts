@@ -86,32 +86,25 @@ export class Ball extends Component {
         this.trajectoryLine.clear();
     }
 
-    drawTrajectoryLine(startPos: Vec3, force: Vec3, gravity: number, bezzierSteps: number) {
+    drawTrajectoryLine(startPos: Vec3, force: Vec3, gravity: number, steps: number) {
         this.trajectoryLine.clear();
-
-
-        let velocity = force.clone(); 
-        let midPoint = new Vec3(
-            startPos.x + velocity.x, 
-            startPos.y + velocity.y, // Adding 50 to create a nice arc
-            0
-        );
-        let endPoint = new Vec3(
-            startPos.x + velocity.x,
-            startPos.y + velocity.y + gravity, 
-            0
-        );
-
-        // Move to start
-        this.trajectoryLine.moveTo(startPos.x, startPos.y);
-
-        // Draw Bézier curve
-        this.trajectoryLine.bezierCurveTo(
-            midPoint.x, midPoint.y, 
-            midPoint.x, midPoint.y, 
-            endPoint.x, endPoint.y
-        );
-
+    
+        let velocity = force.clone();
+        let position = startPos.clone();
+        let timeStep = 1 / 60; // Assuming 60 FPS for the simulation
+    
+        this.trajectoryLine.moveTo(this.node.getWorldPosition().x, this.node.getWorldPosition().y);
+    
+        for (let i = 0; i < steps; i++) {
+            // Update position based on velocity and gravity
+            position.x += velocity.x * timeStep;
+            position.y += velocity.y * timeStep;
+            velocity.y += gravity * timeStep;
+    
+            // Draw line to the new position
+            this.trajectoryLine.lineTo(position.x, position.y);
+        }
+    
         this.trajectoryLine.stroke();
     }
     computeForce(touchStartPoint: Vec3, touchEndPoint: Vec3): Vec3 {
