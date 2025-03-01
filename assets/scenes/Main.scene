@@ -1104,18 +1104,18 @@
     "_lineWidth": 10.4,
     "_strokeColor": {
       "__type__": "cc.Color",
-      "r": 243,
+      "r": 0,
       "g": 0,
       "b": 0,
       "a": 255
     },
-    "_lineJoin": 2,
-    "_lineCap": 0,
+    "_lineJoin": 1,
+    "_lineCap": 1,
     "_fillColor": {
       "__type__": "cc.Color",
-      "r": 235,
-      "g": 47,
-      "b": 47,
+      "r": 189,
+      "g": 179,
+      "b": 179,
       "a": 255
     },
     "_miterLimit": 10,
@@ -1193,7 +1193,7 @@
     "_enabled": true,
     "__prefab": null,
     "enabledContactListener": false,
-    "bullet": true,
+    "bullet": false,
     "awakeOnLoad": true,
     "_group": 1,
     "_type": 2,
@@ -1247,9 +1247,6 @@
     "rigidBody": null,
     "trajectoryLine": {
       "__id__": 29
-    },
-    "trejectoryNode": {
-      "__id__": 27
     },
     "strengthScaleFactor": 1,
     "gravityScale": 1,
