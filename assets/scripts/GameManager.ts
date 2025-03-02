@@ -24,21 +24,31 @@ export class GameManager extends Component {
     gameTime: number = 10;
 
 
-    private score: number = 0;
     private timeRemaining: number = 10; // 30 seconds for one game round
+    private score: number = 0;
     public gameState: GameState = GameState.MAIN_MENU;
 
-    //singleton Instance for easier access
     private static _instance: GameManager = null;
     public static get instance(): GameManager {
-        if (!this._instance) {
-            this._instance = new GameManager();
-        }
         return this._instance;
     }
 
-    constructor() {
-        super();
+    onLoad() {
+        if (GameManager._instance === null) {
+            GameManager._instance = this;
+        } else {
+            this.destroy();
+            return;
+        }
+    }
+
+
+    public getScore() {
+        return this.score;
+    }
+
+    public setScore(score: number) {
+        this.score = score;
     }
 
     protected onEnable(): void {
@@ -49,24 +59,22 @@ export class GameManager extends Component {
     }
 
     private initalizeations() {
-        this.scoreLabel.string = `Score: ${this.score}`;
+        this.scoreLabel.string = `Score: ${this.getScore()}`;
         this.timeRemaining = this.gameTime;
         this.timerLabel.string = `Time: ${this.gameTime}`;
     }
 
-    protected onDestroy(): void {
-        EventsManager.instance.removeEventListener(GameEvents.SCORE_UPDATED, this.onScoreUpdated, this);
-    }
 
     protected onDisable(): void {
         EventsManager.instance.removeEventListener(GameEvents.SCORE_UPDATED, this.onScoreUpdated, this);
     }
 
-    onScoreUpdated(event: any) {
-        this.score = event.detail.score;
-        this.scoreLabel.string = `Score: ${this.score}`;
+    onScoreUpdated= (event: any) =>{
+        console.log(event.detail.score);
+        this.setScore(event.detail.score);
 
-        console.log(`Score Updated: ${this.score}`);
+        console.log("ScoreAfterUpdate"+this.getScore());
+        this.scoreLabel.string = `Score: ${this.getScore()}`;
     }
 
     updateTimer(updateTimer: any, arg1: number) {
@@ -75,7 +83,6 @@ export class GameManager extends Component {
                 this.timeRemaining--;
                 this.timerLabel.string = `Time: ${this.timeRemaining}`;
             } else {
-                console.log('updateTimer');
                 this.endGame();
             }
         }
@@ -88,12 +95,13 @@ export class GameManager extends Component {
     }
 
     endGame = ()=> {
+        console.log('Game Over');
         if(this.gameState === GameState.GAME_OVER) return;
         this.gameState = GameState.GAME_OVER;
         EventsManager.instance.dispatchEvent(GameEvents.GAME_OVER);
 
         // Reset Values
-        this.score = 0;
+        this.setScore(0);
         this.timeRemaining = this.gameTime;
         this.timerLabel.string = `Time: ${this.gameTime}`;
 

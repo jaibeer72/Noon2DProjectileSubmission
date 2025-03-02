@@ -25,6 +25,9 @@ export class EventsManager extends Component {
         this.events.set(GameEvents.GAME_OVER, new EventTarget());
         this.events.set(GameEvents.SCORE_UPDATED, new EventTarget());
         this.events.set(GameEvents.TIMER_UPDATED, new EventTarget());
+        this.events.set(GameEvents.GAME_RESTART, new EventTarget());
+        this.events.set(GameEvents.TARGET_DESTROYED, new EventTarget());
+        this.events.set(GameEvents.OBSTICAL_DESTROYED, new EventTarget());
     }
 
     public dispatchEvent(eventName: string, detail?: any) {
@@ -61,6 +64,8 @@ export const GameEvents = {
     GAME_OVER: 'game_over',
     SCORE_UPDATED: 'score_updated',
     TIMER_UPDATED: 'timer_updated',
-    GAME_RESTART: 'game_restart'
+    GAME_RESTART: 'game_restart',
+    TARGET_DESTROYED : 'target_destroyed',
+    OBSTICAL_DESTROYED : 'obstical_destroyed'
 };
 

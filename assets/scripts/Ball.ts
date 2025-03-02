@@ -48,9 +48,7 @@ export class Ball extends Component {
 
     onGameStart= (event) => {
 
-        console.log("Game Start Event" + event.detail.from);
-
-        if(event.detail && event.detail.from == GameState.PAUSED){
+        if(event.detail && event.detail.from === GameState.PAUSED){
             return;
         }
             
@@ -72,7 +70,6 @@ export class Ball extends Component {
         // LOL AABB Collision Detection TODO : let's make a helper function for this if time presents
         if (touchPos.x > ballPos.x - ballSize.width / 2 && touchPos.x < ballPos.x + ballSize.width / 2 &&
             touchPos.y > ballPos.y - ballSize.height / 2 && touchPos.y < ballPos.y + ballSize.height / 2) {
-            console.log("Touch Start");
             this.isDragging = true;
             this.touchStartPoint = ballPos;
             this.touchUIStartPoint = touchPos; 
