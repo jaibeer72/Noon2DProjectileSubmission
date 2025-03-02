@@ -1,4 +1,6 @@
 import { _decorator, CCFloat, CCInteger, Component, director, Graphics, math, Node, NodeEventType, physics, PhysicsSystem, PhysicsSystem2D, RigidBody2D, UITransform, Vec2, Vec3 } from 'cc';
+import { EventsManager, GameEvents } from './EventsManager';
+import { GameState } from './GameManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('Ball')
@@ -23,20 +25,38 @@ export class Ball extends Component {
     private touchStartPoint : Vec3 = Vec3.ZERO;
     private touchEndPoint : Vec3 = Vec3.ZERO; 
     private touchUIStartPoint : Vec2 = Vec2.ZERO; 
+    private ballStartPosition : Vec3 = Vec3.ZERO;
 
 
 
-    protected onLoad(): void {
+    protected onEnable(): void {
         director.getScene().getChildByName('Canvas').on(Node.EventType.TOUCH_START, this.onTouchStart, this);
         director.getScene().getChildByName('Canvas').on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         director.getScene().getChildByName('Canvas').on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+
+        EventsManager.instance.addEventListener(GameEvents.GAME_START, this.onGameStart, this);
     }
 
-    
-    start() {
+    protected onLoad(): void {
         this.rigidBody = this.getComponent(RigidBody2D);
+        this.ballStartPosition = this.node.getPosition();
     }
 
+    protected onDisable(): void {
+        EventsManager.instance.removeEventListener(GameEvents.GAME_START, this.onGameStart, this);
+    }
+
+    onGameStart= (event) => {
+
+        console.log("Game Start Event" + event.detail.from);
+
+        if(event.detail && event.detail.from == GameState.PAUSED){
+            return;
+        }
+            
+        this.node.setPosition(this.ballStartPosition);
+        this.rigidBody.linearVelocity = Vec2.ZERO;
+    }
 
 
     onTouchStart(event: any) {
@@ -67,8 +87,6 @@ export class Ball extends Component {
         this.touchEndPoint = event.getUILocation();
 
         let force = this.computeForce(this.touchUIStartPoint.toVec3(),  this.touchEndPoint);
-
-         console.log( PhysicsSystem2D.instance.gravity); 
 
         this.drawTrajectory(this.touchStartPoint, force , (-10 * this.gravityScale) , this.bezzierSteps)
     }
