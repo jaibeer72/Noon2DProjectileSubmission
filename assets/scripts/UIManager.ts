@@ -1,4 +1,4 @@
-import { _decorator, Component, Node ,director, sys} from 'cc';
+import { _decorator, Component, Node ,director, sys, Game} from 'cc';
 import { EventsManager, GameEvents } from './EventsManager';
 import { GameManager, GameState } from './GameManager';
 const { ccclass, property } = _decorator;
@@ -60,7 +60,7 @@ export class UIManager extends Component {
         this.mainMenuNode.active = false;
         this.hudNode.active = true;
         this.gameOverNode.active = false;
-        EventsManager.instance.dispatchEvent(GameEvents.GAME_START);
+        EventsManager.instance.dispatchEvent(GameEvents.GAME_RESTART);
         director.resume();
     }
 
@@ -69,6 +69,14 @@ export class UIManager extends Component {
         this.mainMenuNode.active = false;
         this.hudNode.active = false;
         this.gameOverNode.active = true;
+    }
+
+    private onGotoMainMenu(){
+        this.gameNode.active = false;
+        this.mainMenuNode.active = true;
+        this.hudNode.active = false;
+        this.gameOverNode.active = false;
+        GameManager.instance.gameState = GameState.MAIN_MENU;
     }
 }
 

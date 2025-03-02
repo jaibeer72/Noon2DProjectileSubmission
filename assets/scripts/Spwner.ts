@@ -34,7 +34,6 @@ export class Spwner extends Component {
     private activeObstacles: number = 0;
 
     onLoad() {
-
         for (let i = 0; i < this.targetPoolSize; ++i) {
             const target = instantiate(this.targetPrefab);
             target.active = false;
@@ -48,7 +47,6 @@ export class Spwner extends Component {
             this.obstaclePool.push(obstacle);
             this.availableObstacleIndexes.push(i);
         }
-
 
         EventsManager.instance.addEventListener(GameEvents.TARGET_DESTROYED, this.returnToPool, this);
         EventsManager.instance.addEventListener(GameEvents.OBSTICAL_DESTROYED, this.returnToPool, this);

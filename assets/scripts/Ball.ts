@@ -35,6 +35,7 @@ export class Ball extends Component {
         director.getScene().getChildByName('Canvas').on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
 
         EventsManager.instance.addEventListener(GameEvents.GAME_START, this.onGameStart, this);
+        EventsManager.instance.addEventListener(GameEvents.GAME_RESTART, this.onGameStart, this);
     }
 
     protected onLoad(): void {
