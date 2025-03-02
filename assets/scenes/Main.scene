@@ -1222,7 +1222,7 @@
     "__prefab": null,
     "tag": 0,
     "_group": 1,
-    "_density": 1,
+    "_density": 2,
     "_sensor": false,
     "_friction": 0.2,
     "_restitution": 0,
