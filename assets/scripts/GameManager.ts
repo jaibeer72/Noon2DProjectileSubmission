@@ -55,7 +55,8 @@ export class GameManager extends Component {
         EventsManager.instance.addEventListener(GameEvents.SCORE_UPDATED, this.onScoreUpdated, this);
         EventsManager.instance.addEventListener(GameEvents.GAME_START, this.onGameStart, this);
         EventsManager.instance.addEventListener(GameEvents.GAME_PAUSE, this.onGamePause, this);
-        EventsManager.instance.addEventListener(GameEvents.GAME_RESTART, this.endGame, this);
+        EventsManager.instance.addEventListener(GameEvents.GAME_RESTART, this.onGameStart, this);
+        EventsManager.instance.addEventListener(GameEvents.GAME_OVER, this.endGame, this);
         this.initalizeations();
     }
 
@@ -104,7 +105,7 @@ export class GameManager extends Component {
         // Reset Values
         this.setScore(0);
         this.scoreLabel.string = `Score: ${this.getScore()}`;
-        
+
         this.timeRemaining = this.gameTime;
         this.timerLabel.string = `Time: ${this.gameTime}`;
 

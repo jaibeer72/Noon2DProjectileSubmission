@@ -60,7 +60,7 @@ export class Spwner extends Component {
 
         this.targetPool.forEach((target) => {
             target.active = false;
-            this.availableObstacleIndexes.push(this.targetPool.indexOf(target));
+            this.availableTargetIndexes.push(this.targetPool.indexOf(target));
         });
 
         this.obstaclePool.forEach((obstacle) => {
