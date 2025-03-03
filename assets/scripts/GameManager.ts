@@ -23,6 +23,9 @@ export class GameManager extends Component {
     @property(CCInteger)
     gameTime: number = 10;
 
+    @property(RichText)
+    private gameOverLabel: RichText = null;
+
 
     private timeRemaining: number = 10; // 30 seconds for one game round
     private score: number = 0;
@@ -100,7 +103,9 @@ export class GameManager extends Component {
         console.log('Game Over');
         if(this.gameState === GameState.GAME_OVER) return;
         this.gameState = GameState.GAME_OVER;
-        EventsManager.instance.dispatchEvent(GameEvents.GAME_OVER);
+        EventsManager.instance.dispatchEvent(GameEvents.GAME_OVER, {score: this.getScore()});
+
+        this.gameOverLabel.string = `Game Over! Your Score: ${this.getScore()}`;
 
         // Reset Values
         this.setScore(0);
